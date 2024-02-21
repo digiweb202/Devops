@@ -1,0 +1,81 @@
+Kubernetes Cluster Setup command list
+Master Node Setup 
+
+Setting up a Kubernetes cluster on an Ubuntu machine involves several steps, including installing container runtime, configuring Kubernetes 
+components, and initializing the cluster. Below are the commands to set up a Kubernetes master node on Ubuntu:
+Install Docker:
+bash
+Copy code
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+Install kubeadm, kubelet, and kubectl:
+bash
+Copy code
+sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+Disable Swap:
+bash
+Copy code
+sudo swapoff -a
+sudo sed -i '/swap/d' /etc/fstab
+Initialize Kubernetes Cluster:
+bash
+Copy code
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+Note: You can customize the --pod-network-cidr based on your network configuration.
+Configure kubectl:
+bash
+Copy code
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+Install a Pod Network (e.g., Calico):
+bash
+Copy code
+kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/rbac-kdd.yaml
+kubectl apply -f https://docs.projectcalico.org/v3.3/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
+Check Cluster Status:
+bash
+Copy code
+kubectl get nodes
+kubectl get pods --all-namespaces
+The above commands provide a basic setup for a Kubernetes master node on Ubuntu. Keep in mind that Kubernetes configurations and versions 
+may vary, so always refer to the official documentation for the latest information and best practices.
+Worker1 Node setup command list
+Setting up a Kubernetes worker node on Ubuntu involves several steps, including installing Docker, configuring the necessary components, and 
+joining the node to the cluster. Below is a set of commands to set up a Kubernetes worker node on Ubuntu:
+Install Docker:
+bash
+Copy code
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+Install kubeadm, kubelet, and kubectl:
+bash
+Copy code
+sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+Join the Node to the Cluster:
+After running kubeadm init on the master node, it will provide a command to join worker nodes. You need to copy and run that command on each worker node.
+bash
+Copy code
+sudo kubeadm join <master-node-ip>:<master-node-port> --token <token> --discovery-token-ca-cert-hash <hash>
+Replace <master-node-ip>, <master-node-port>, <token>, and <hash> with the actual values provided by the kubeadm init command on the master node.
+Verify Node Status:
+On the master node, you can check if the worker node has joined successfully:
+bash
+Copy code
+kubectl get nodes
+The worker node should be listed with a STATUS of Ready.
+That's it! Your worker node should now be part of the Kubernetes cluster. Repeat these steps for each additional worker node you want to add to the cluster.
