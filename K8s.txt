@@ -60,12 +60,16 @@ sudo systemctl enable docker
 Install kubeadm, kubelet, and kubectl:
 bash
 Copy code
+
+
 sudo apt-get update && sudo apt-get install -y apt-transport-https curl
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubelet kubeadm kubectl
 sudo apt-mark hold kubelet kubeadm kubectl
+
+
 Join the Node to the Cluster:
 After running kubeadm init on the master node, it will provide a command to join worker nodes. You need to copy and run that command on each worker node.
 bash
@@ -79,3 +83,46 @@ Copy code
 kubectl get nodes
 The worker node should be listed with a STATUS of Ready.
 That's it! Your worker node should now be part of the Kubernetes cluster. Repeat these steps for each additional worker node you want to add to the cluster.
+
+
+
+
+
+win
+********************************************
+********************************************
+sudo apt update
+sudo apt install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+
+********************************************
+********************************************
+Install kubeadm, kubelet, and kubectl:
+bash
+Copy code
+
+*********************************************
+*********************************************
+
+sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+*********************************************
+*********************************************
+win
+*********************************************
+*********************************************
+sudo kubeadm join 10.0.2.15:6443 --token 20okff.rq5bx26yhyn7y6ww --discovery-token-ca-cert-hash sha256:ce0b014ac96e60905424c0cd012920e1a54b287e7b2c196a3da58333ab6ea9fa
+*********************************************
+*********************************************
+win
+*********************************************
+*********************************************
+sudo swapoff -a
+sudo sed -i '/swap/d' /etc/fstab
+*********************************************
+*********************************************
