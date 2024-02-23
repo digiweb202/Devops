@@ -126,3 +126,127 @@ sudo swapoff -a
 sudo sed -i '/swap/d' /etc/fstab
 *********************************************
 *********************************************
+
+
+
+Setting up a Kubernetes cluster with master nodes on Ubuntu involves several steps. Below is a command list that you can follow. Note that the commands assume you have sudo privileges on your Ubuntu machines.
+
+Prerequisites:
+Disable Swap:
+
+bash
+Copy code
+sudo swapoff -a
+sudo sed -i '/swap/d' /etc/fstab
+Update and Install Necessary Packages:
+
+bash
+Copy code
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y docker.io
+sudo systemctl enable docker
+sudo systemctl start docker
+Install kubeadm, kubelet, and kubectl:
+
+bash
+Copy code
+sudo apt-get install -y apt-transport-https curl
+sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+sudo echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+sudo apt-get update
+sudo apt-get install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+Initialize the Kubernetes Master Node:
+Initialize Kubernetes:
+
+bash
+Copy code
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+Set Up Kubeconfig:
+
+bash
+Copy code
+mkdir -p 
+�
+�
+�
+�
+/
+.
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+−
+�
+/
+�
+�
+�
+/
+�
+�
+�
+�
+�
+�
+�
+�
+�
+�
+/
+�
+�
+�
+�
+�
+.
+�
+�
+�
+�
+HOME/.kubesudocp−i/etc/kubernetes/admin.confHOME/.kube/config
+sudo chown 
+(
+�
+�
+−
+�
+)
+:
+(id−u):(id -g) $HOME/.kube/config
+Set Up a Pod Network (Choose one of these options):
+Using Calico:
+
+bash
+Copy code
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+Using Flannel:
+
+bash
+Copy code
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+Allow Scheduling on the Master Node (Optional):
+Untaint the Master Node:
+bash
+Copy code
+kubectl taint nodes --all node-role.kubernetes.io/master-
+Save Token for Joining Worker Nodes:
+Save the kubeadm join token:
+
+bash
+Copy code
+kubeadm token create --print-join-command > join-command.sh
+
+
+
+
+system build in directly connection network link that will be multipal node connection in single cluster connection that will be easily maintable through connection single network through //:
+kubeadm join 10.0.2.7:6443 --token pgqbgt.nfj1gtqk19qq2573 --discovery-token-ca-cert-hash sha256:f208ded91c5a7ecb1b54b497a61df7074f73853436c6e86d0e8d91b31d7eae6d
